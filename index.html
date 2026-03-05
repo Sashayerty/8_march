@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8 Марта для Любимой</title>
+    <style>
+        :root {
+            --bg-color: #fff5f7;
+            --accent-color: #ff85a2;
+            --text-color: #4a4a4a;
+            --tg-color: #0088cc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden; /* Чтобы сердечки не создавали полосу прокрутки */
+        }
+
+        h1 { color: var(--accent-color); text-align: center; font-size: 1.5rem; margin-bottom: 25px; }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(255, 133, 162, 0.2);
+            transition: transform 0.2s;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card.locked {
+            background: #f0f0f0;
+            filter: grayscale(1);
+            opacity: 0.7;
+        }
+
+        .card .time {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--accent-color);
+        }
+
+        .tg-link {
+            margin-top: 30px;
+            padding: 12px 25px;
+            background-color: white;
+            color: var(--tg-color);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0, 136, 204, 0.15);
+            border: 1px solid #e0f2ff;
+            z-index: 1;
+        }
+
+        /* СТИЛИ ДЛЯ СЕРДЕЧЕК */
+        .heart-particle {
+            position: fixed;
+            bottom: -10px;
+            color: var(--accent-color);
+            font-size: 20px;
+            user-select: none;
+            pointer-events: none;
+            z-index: 2000;
+            animation: moveUp 3s linear forwards;
+        }
+
+        @keyframes moveUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 90%;
+            text-align: center;
+            position: relative;
+        }
+
+        .qr-placeholder {
+            background: #eee;
+            width: 180px; height: 180px;
+            margin: 15px auto;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .love-letter {
+            font-style: italic;
+            border-left: 3px solid var(--accent-color);
+            padding-left: 15px;
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        button.close-btn {
+            margin-top: 20px;
+            background: var(--accent-color);
+            color: white; border: none;
+            padding: 10px 25px; border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .music-toggle {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: white;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(255, 133, 162, 0.3);
+            cursor: pointer;
+            z-index: 2000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="music-toggle" id="musicBtn" onclick="toggleMusic()">🎵</div>
+    
+    <audio id="bgMusic" loop>
+        <source src="" type="audio/mpeg">
+    </audio>
+
+    <h1>🌸 Книга "Мой подарок для тебя" 🌸</h1>
+    
+    <div class="calendar" id="calendar"></div>
+
+    <a href="https://t.me/elinas_8_march_bot" target="_blank" class="tg-link">
+        <span>Уведомления в Telegram</span>
+    </a>
+
+    <div id="modal">
+        <div class="modal-content" id="modal-inner"></div>
+    </div>
+
+    <script>
+        const gifts = [
+            {
+                hour: 9,
+                title: "Глава 1: Начало. Прелюдия для ушей.",
+                audio: "./track_1.m4a",
+                content: "<h3>Доброе утро, родная!</h3><p>Я хочу, чтобы этот день начался с напоминания о том, как сильно ты освещаешь мою жизнь. Ты самая невероятная!</p>"
+            },
+            {
+                hour: 12,
+                title: "Глава 2: Путь к сердцу девушки.",
+                audio: "./track_2.m4a",
+                content: "<h3>Шоколадная охота! 🍫</h3><p>Твой запас эндорфинов спрятан в месте, где 'всегда холодно'... Ищи за коробкой с молоком!</p>"
+            },
+            {
+                hour: 15,
+                title: "Глава 3: Уличная атмосфера.",
+                audio: "track_3.m4a",
+                content: "<h3>Кое-что для тебя... 🎁</h3><div class='qr-placeholder'><img src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.wildberries.ru' style='width:150px;'></div>"
+            },
+            {
+                hour: 18,
+                title: "Глава 4: Прелюдия, которая желанна.",
+                audio: "track_4.m4a",
+                content: "<h3>Любовное письмо 💌</h3><div class='love-letter'><p>Я долго думал, как выразить всё... Ты — мой вдохновитель.</p></div>"
+            }
+        ];
+
+        const music = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicBtn');
+        music.volume = 0.2; 
+
+        // ФУНКЦИЯ СОЗДАНИЯ СЕРДЕЧЕК
+        function createHearts() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart-particle';
+                    heart.innerHTML = '❤️';
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.fontSize = Math.random() * (30 - 15) + 15 + 'px';
+                    heart.style.animationDuration = Math.random() * (4 - 2) + 2 + 's';
+                    document.body.appendChild(heart);
+                    
+                    // Удаляем элемент после анимации
+                    setTimeout(() => heart.remove(), 4000);
+                }, i * 100);
+            }
+        }
+
+        function playChapterMusic(audioUrl) {
+            if (music.src !== audioUrl) {
+                music.src = audioUrl;
+                music.load();
+            }
+            music.play().catch(e => console.log("Нужен клик"));
+            musicBtn.innerText = '⏸️';
+        }
+
+        function toggleMusic() {
+            if (music.paused) {
+                music.play();
+                musicBtn.innerText = '⏸️';
+            } else {
+                music.pause();
+                musicBtn.innerText = '🎵';
+            }
+        }
+
+        function init() {
+            const container = document.getElementById('calendar');
+            const now = new Date();
+            // СЕГОДНЯШНЯЯ ДАТА ДЛЯ ТЕСТА: 5 МАРТА
+            const isMarch8 = (now.getMonth() === 2 && (now.getDate() === 5 || now.getDate() === 8));
+            const currentHour = now.getHours();
+
+            gifts.forEach(gift => {
+                const card = document.createElement('div');
+                const isLocked = !isMarch8 || currentHour < gift.hour;
+                
+                card.className = `card ${isLocked ? 'locked' : ''}`;
+                card.innerHTML = `
+                    <div class="time">${gift.hour}:00</div>
+                    <div class="title">${gift.title}</div>
+                    <div class="status" style="font-size: 0.8rem; margin-top: 10px;">
+                        ${isLocked ? '🔒 Глава скоро откроется!' : '🎁 Прочитать главу.'}
+                    </div>
+                `;
+
+                card.onclick = () => {
+                    if (isLocked) {
+                        alert("Скоро глава откроется.");
+                    } else {
+                        createHearts(); // ЗАПУСК СЕРДЕЧЕК
+                        playChapterMusic(gift.audio);
+                        showModal(gift.content);
+                    }
+                };
+                container.appendChild(card);
+            });
+        }
+
+        function showModal(content) {
+            const modal = document.getElementById('modal');
+            const inner = document.getElementById('modal-inner');
+            inner.innerHTML = content + '<br><button class="close-btn" onclick="closeModal()">Закрыть</button>';
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            music.pause(); 
+            musicBtn.innerText = '🎵';
+        }
+
+        init();
+    </script>
+</body>
+</html>
