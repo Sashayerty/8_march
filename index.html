@@ -160,16 +160,16 @@
     <div class="music-toggle" id="musicBtn" onclick="toggleMusic()">🎵</div>
     
     <audio id="bgMusic" loop>
-        <source src="" type="audio/mpeg">
+        <source src="./track_5.m4a" type="audio/mpeg">
     </audio>
 
     <h1>🌸 Книга "Мой подарок для тебя" 🌸</h1>
     
     <div class="calendar" id="calendar"></div>
 
-    <a href="https://t.me/elinas_8_march_bot" target="_blank" class="tg-link">
+    <!-- <a href="https://t.me/elinas_8_march_bot" target="_blank" class="tg-link">
         <span>Уведомления в Telegram</span>
-    </a>
+    </a> -->
 
     <div id="modal">
         <div class="modal-content" id="modal-inner"></div>
@@ -181,25 +181,31 @@
                 hour: 9,
                 title: "Глава 1: Начало. Прелюдия для ушей.",
                 audio: "./track_1.m4a",
-                content: "<h3>Доброе утро, родная!</h3><p>Я хочу, чтобы этот день начался с напоминания о том, как сильно ты освещаешь мою жизнь. Ты самая невероятная!</p>"
+                content: "<h3>Доброе утро, пупсичек!</h3><p>Прости, что я сейчас не поздравляю тебя вживую. Первое, что я хочу тебе сказать, это то, что ты тот самый человек, который делает мою жизь ярче каждый день. Я безумно тебя люблю и дорожу каждой секундой, когда нахожусь рядом. Я очень скучаю. Если захочешь дослушать музычку из главы, то нажми на кнопку справа сверху.</p>"
             },
             {
-                hour: 12,
-                title: "Глава 2: Путь к сердцу девушки.",
+                hour: 11,
+                title: "Глава 2: Поиски.",
+                audio: "./track_5.m4a",
+                content: "<h3>Тебе нужно кое-что найти.</h3><p>Под столом наклеен стикер: на нем написано кое-что по-настоящему важное для меня!</p>"
+            },
+            {
+                hour: 13,
+                title: "Глава 3: Путь к сердцу девушки.",
                 audio: "./track_2.m4a",
-                content: "<h3>Шоколадная охота! 🍫</h3><p>Твой запас эндорфинов спрятан в месте, где 'всегда холодно'... Ищи за коробкой с молоком!</p>"
+                content: "<h3>Шоколадная охота! 🍫</h3><p>Твой запас эндорфинов спрятан в НЁМ, который у меня был до того, как ты мне подарила новый.</p>"
             },
             {
-                hour: 15,
-                title: "Глава 3: Уличная атмосфера.",
+                hour: 17,
+                title: "Глава 4: Уличная атмосфера.",
                 audio: "track_3.m4a",
-                content: "<h3>Кое-что для тебя... 🎁</h3><div class='qr-placeholder'><img src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.wildberries.ru' style='width:150px;'></div>"
+                content: "<h3>Кое-что для тебя... 🎁</h3><img src='./qrcode.jpg' style='width:300px;'>"
             },
             {
-                hour: 18,
-                title: "Глава 4: Прелюдия, которая желанна.",
+                hour: 19,
+                title: "Глава 5: Прелюдия, которая желанна.",
                 audio: "track_4.m4a",
-                content: "<h3>Любовное письмо 💌</h3><div class='love-letter'><p>Я долго думал, как выразить всё... Ты — мой вдохновитель.</p></div>"
+                content: "<h3>Очень важные слова</h3><div class='love-letter'><p>Найдешь их в сумке из-под ноутбука</p></div>"
             }
         ];
 
@@ -248,12 +254,13 @@
             const container = document.getElementById('calendar');
             const now = new Date();
             // СЕГОДНЯШНЯЯ ДАТА ДЛЯ ТЕСТА: 5 МАРТА
-            const isMarch8 = (now.getMonth() === 2 && (now.getDate() === 5 || now.getDate() === 8));
+            const isMarch8 = (now.getMonth() === 2 && now.getDate() === 8);
             const currentHour = now.getHours();
 
             gifts.forEach(gift => {
                 const card = document.createElement('div');
                 const isLocked = !isMarch8 || currentHour < gift.hour;
+                // const isLocked = false;
                 
                 card.className = `card ${isLocked ? 'locked' : ''}`;
                 card.innerHTML = `
