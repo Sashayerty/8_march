@@ -254,13 +254,13 @@
             const container = document.getElementById('calendar');
             const now = new Date();
             // СЕГОДНЯШНЯЯ ДАТА ДЛЯ ТЕСТА: 5 МАРТА
-            const isMarch8 = (now.getMonth() === 2 && now.getDate() === 8);
+            const isMarch8 = (now.getMonth() === 2 && now.getDate() === 10);
             const currentHour = now.getHours();
 
             gifts.forEach(gift => {
                 const card = document.createElement('div');
-                const isLocked = !isMarch8 || currentHour < gift.hour;
-                // const isLocked = false;
+                // const isLocked = !isMarch8 || currentHour < gift.hour;
+                const isLocked = false;
                 
                 card.className = `card ${isLocked ? 'locked' : ''}`;
                 card.innerHTML = `
